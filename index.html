@@ -67,6 +67,9 @@
     .primary:hover:before{transform:translateX(0)}.primary span{position:relative;z-index:1}.primary:hover span{color:#111827}
     .primary:disabled{opacity:.55;cursor:wait}
     .back{height:48px;border:1px solid var(--line);background:transparent;color:#aab3c1;font-weight:800}
+    .preview{width:100%;height:48px;margin-top:12px;border:1px solid var(--line);background:rgba(255,255,255,.025);
+      color:#aab3c1;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
+    .preview:hover{border-color:var(--mint);color:var(--mint)}
     .message{display:none;border:1px solid rgba(85,230,213,.35);background:rgba(85,230,213,.08);color:var(--mint);
       padding:13px 14px;font-size:12px;line-height:1.5}.message.show{display:block}.message.error{border-color:rgba(255,70,85,.4);background:rgba(255,70,85,.08);color:#ff929a}
     .legal{margin:25px 0 0;color:#515d6f;font-size:9px;line-height:1.6;text-align:center}
@@ -137,13 +140,24 @@
           <button class="primary" type="submit"><span>Reset-Link senden →</span></button>
           <button class="back" type="button" data-view="login">Zurück zum Login</button>
         </form>
+        <button class="preview" id="preview-app" type="button">App ohne Firebase ansehen</button>
         <p class="legal">V-Track ist ein unabhängiges Projekt und wird nicht von Riot Games unterstützt oder betrieben.<br>Deine Daten bleiben in deinem persönlichen Firebase-Konto.</p>
       </div>
     </section>
   </main>
 
-  <script>
-    "use strict";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword,
+      sendPasswordResetEmail, updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+
     // Entfernt versehentlich übermittelte Formulardaten sofort aus der Adresszeile.
     if (location.search) history.replaceState({}, document.title, location.pathname);
 
@@ -156,24 +170,60 @@
     const heading = document.querySelector("#heading");
     const subtitle = document.querySelector("#subtitle");
     const tabs = document.querySelector("#tabs");
+    const configured = !Object.values(firebaseConfig).some(value =>
+      String(value).startsWith("DEIN") || String(value).includes("DEIN_PROJEKT")
+    );
+    let auth;
+    let db;
+
+    if (configured) {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      await setPersistence(auth, browserLocalPersistence);
+      onAuthStateChanged(auth, user => {
+        if (user) location.replace("dashboard.html");
+      });
+    } else {
+      notify("Firebase ist vorbereitet. Ersetze die Platzhalter in js/firebase-config.js durch deine Firebase-Web-App-Daten.", true);
+    }
 
     document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => showView(button.dataset.view)));
+    document.querySelector("#preview-app").addEventListener("click", () => {
+      sessionStorage.setItem("vtrackPreview", "true");
+      location.href = "dashboard.html";
+    });
     document.querySelectorAll(".reveal").forEach(button => button.addEventListener("click", () => {
       const input = button.previousElementSibling;
       input.type = input.type === "password" ? "text" : "password";
       button.textContent = input.type === "password" ? "Anzeigen" : "Verbergen";
     }));
-    document.querySelectorAll("form").forEach(form => form.addEventListener("submit", event => {
+    document.querySelectorAll("form").forEach(form => form.addEventListener("submit", async event => {
       event.preventDefault();
+      if (!configured) {
+        notify("Trage zuerst deine Firebase-Konfiguration in js/firebase-config.js ein.", true);
+        return;
+      }
       const button = form.querySelector(".primary");
       const original = button.innerHTML;
       button.disabled = true; button.innerHTML = '<span class="loading"></span>';
-      window.setTimeout(() => {
+      const data = new FormData(form);
+      try {
+        if (form.id === "login") {
+          await signInWithEmailAndPassword(auth, data.get("email"), data.get("password"));
+        } else if (form.id === "register") {
+          const credential = await createUserWithEmailAndPassword(auth, data.get("email"), data.get("password"));
+          await updateProfile(credential.user, { displayName: data.get("displayName") });
+          await createFoundation(credential.user);
+        } else {
+          await sendPasswordResetEmail(auth, data.get("email"));
+          notify("Der Link zum Zurücksetzen wurde an deine E-Mail-Adresse gesendet.");
+        }
+      } catch (error) {
+        notify(authError(error.code), true);
+      } finally {
         button.disabled = false; button.innerHTML = original;
-        notify(form.id === "forgot"
-          ? "Die Oberfläche ist bereit. Nach Einbau deiner Firebase-Konfiguration wird hier der Reset-Link versendet."
-          : "Das Design ist bereit. Trage jetzt deine Firebase-Konfiguration ein, um die Anmeldung zu aktivieren.");
-      }, 650);
+      }
     }));
 
     function showView(name) {
@@ -185,6 +235,29 @@
     }
     function notify(text, error = false) {
       message.textContent = text; message.className = "message show" + (error ? " error" : "");
+    }
+    async function createFoundation(user) {
+      const sections = {
+        profile: { displayName:user.displayName || "",email:user.email || "",riotId:"",region:"eu" },
+        settings: { language:"de",timezone:"Europe/Vienna",showRr:true,saveRoulette:true },
+        statistics: { totalMatches:0,wins:0,losses:0,winrate:0,averageKills:0,averageDeaths:0,averageAssists:0,averageAcs:0,averageKda:0 },
+        ranked: { currentRank:"",peakRank:"",rr:null,episode:"",act:"" }
+      };
+      await Promise.all(Object.entries(sections).map(async ([name, values]) => {
+        const reference = doc(db, "users", user.uid, name, "current");
+        if (!(await getDoc(reference)).exists()) {
+          await setDoc(reference, { ...values,createdAt:serverTimestamp(),updatedAt:serverTimestamp() });
+        }
+      }));
+    }
+    function authError(code = "") {
+      return ({
+        "auth/invalid-credential":"E-Mail-Adresse oder Passwort ist nicht korrekt.",
+        "auth/email-already-in-use":"Für diese E-Mail-Adresse besteht bereits ein Konto.",
+        "auth/weak-password":"Das Passwort muss mindestens sechs Zeichen lang sein.",
+        "auth/invalid-email":"Bitte gib eine gültige E-Mail-Adresse ein.",
+        "auth/too-many-requests":"Zu viele Versuche. Bitte probiere es später erneut."
+      })[code] || "Die Anmeldung konnte nicht abgeschlossen werden. Bitte versuche es erneut.";
     }
   </script>
 </body>
