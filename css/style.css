@@ -11,3 +11,5 @@
 .required-note{border:1px solid #ff465566;background:#ff465512;color:#ffabb1;padding:1rem;border-radius:8px}
 .riot-notice{border-left:3px solid var(--red);padding:1rem 1.2rem;background:#ff46550c;color:#cbd3df}
 @media(max-width:700px){.footer-inner{flex-direction:column;align-items:flex-start}.site-footer{padding:1.4rem 1rem}}
+body::after{content:"V\A V-TRACK";white-space:pre;position:fixed;inset:0;z-index:0;display:grid;place-items:center;text-align:center;transform:translateY(5vh);pointer-events:none;color:rgba(255,70,85,.045);font-size:clamp(5rem,14vw,13rem);font-weight:950;line-height:.58;letter-spacing:.08em;text-indent:.08em;text-shadow:0 0 80px rgba(255,70,85,.035)}
+body>:not(dialog){position:relative;z-index:1}
