@@ -17,6 +17,8 @@ document.querySelector("#open-match-form").addEventListener("click", openNewMatc
 document.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", closeDialog));
 document.querySelector("#match-search").addEventListener("input", render);
 document.querySelector("#result-filter").addEventListener("change", render);
+form.elements.agent.addEventListener("change", syncAgentRole);
+form.elements.gameMode.addEventListener("change", () => syncRankedFields(true));
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
@@ -110,6 +112,8 @@ function openNewMatch() {
   setDefaultDate();
   document.querySelector("#match-dialog-title").textContent = "Match eintragen";
   form.querySelector('button[type="submit"]').textContent = "Match speichern";
+  syncAgentRole();
+  syncRankedFields(false);
   dialog.showModal();
 }
 
@@ -124,6 +128,8 @@ function openEditMatch(id) {
     if (form.elements[name]) form.elements[name].value = match[name] ?? "";
   });
   form.elements.mvp.checked = Boolean(match.mvp);
+  syncAgentRole();
+  syncRankedFields(false);
   document.querySelector("#match-dialog-title").textContent = "Match bearbeiten";
   form.querySelector('button[type="submit"]').textContent = "Änderungen speichern";
   dialog.showModal();
@@ -132,6 +138,22 @@ function openEditMatch(id) {
 function closeDialog() {
   editingId = null;
   dialog.close();
+}
+
+function syncAgentRole() {
+  const option = form.elements.agent.selectedOptions[0];
+  form.elements.role.value = option?.dataset.role || "";
+}
+
+function syncRankedFields(clearWhenHidden) {
+  const ranked = form.elements.gameMode.value === "Competitive";
+  const container = document.querySelector("#ranked-match-fields");
+  container.hidden = !ranked;
+  if (!ranked && clearWhenHidden) {
+    ["rrChange", "rrAfter", "rankBefore", "rankAfter"].forEach(name => {
+      form.elements[name].value = "";
+    });
+  }
 }
 
 function setDefaultDate() {

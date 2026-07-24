@@ -14,10 +14,17 @@
       <div id="match-message" class="message" hidden></div>
       <div class="form-grid">
         <label>Datum<input type="date" name="date" required></label><label>Uhrzeit<input type="time" name="time" required></label>
-        <label>Spielmodus<select name="gameMode" required><option>Competitive</option><option>Unrated</option><option>Swiftplay</option><option>Premier</option><option>Deathmatch</option><option>Custom</option></select></label>
+        <label>Spielmodus<select name="gameMode" required><option value="Competitive">Competitive</option><option value="Unrated">Unrated</option><option value="Swiftplay">Swiftplay</option><option value="Premier">Premier</option><option value="Deathmatch">Deathmatch</option><option value="Team Deathmatch">Team Deathmatch</option><option value="Spike Rush">Spike Rush</option><option value="Escalation">Escalation</option><option value="Custom">Custom</option></select></label>
         <label>Queue<input name="queue" placeholder="Solo / Duo / 5-Stack"></label>
-        <label>Map<input name="map" required placeholder="z. B. Ascent"></label><label>Agent<input name="agent" required placeholder="z. B. Jett"></label>
-        <label>Rolle<select name="role"><option>Duelist</option><option>Initiator</option><option>Controller</option><option>Sentinel</option></select></label>
+        <label>Map<select name="map" required><option value="">Map auswählen</option><option>Summit</option><option>Corrode</option><option>Abyss</option><option>Sunset</option><option>Lotus</option><option>Pearl</option><option>Fracture</option><option>Breeze</option><option>Icebox</option><option>Ascent</option><option>Split</option><option>Haven</option><option>Bind</option></select></label>
+        <label>Agent<select name="agent" required>
+          <option value="">Agent auswählen</option>
+          <optgroup label="Duelists"><option data-role="Duelist">Jett</option><option data-role="Duelist">Phoenix</option><option data-role="Duelist">Raze</option><option data-role="Duelist">Reyna</option><option data-role="Duelist">Yoru</option><option data-role="Duelist">Neon</option><option data-role="Duelist">Iso</option><option data-role="Duelist">Waylay</option></optgroup>
+          <optgroup label="Initiators"><option data-role="Initiator">Sova</option><option data-role="Initiator">Breach</option><option data-role="Initiator">Skye</option><option data-role="Initiator">KAY/O</option><option data-role="Initiator">Fade</option><option data-role="Initiator">Gekko</option><option data-role="Initiator">Tejo</option></optgroup>
+          <optgroup label="Controllers"><option data-role="Controller">Brimstone</option><option data-role="Controller">Viper</option><option data-role="Controller">Omen</option><option data-role="Controller">Astra</option><option data-role="Controller">Harbor</option><option data-role="Controller">Clove</option></optgroup>
+          <optgroup label="Sentinels"><option data-role="Sentinel">Sage</option><option data-role="Sentinel">Cypher</option><option data-role="Sentinel">Killjoy</option><option data-role="Sentinel">Chamber</option><option data-role="Sentinel">Deadlock</option><option data-role="Sentinel">Vyse</option></optgroup>
+        </select></label>
+        <label>Rolle<input name="role" readonly placeholder="Wird automatisch gesetzt"></label>
         <label>Ergebnis<select name="result" required><option value="win">Sieg</option><option value="loss">Niederlage</option></select></label>
         <label>Eigene Runden<input type="number" min="0" max="30" name="roundsWon" required placeholder="13"></label>
         <label>Gegnerische Runden<input type="number" min="0" max="30" name="roundsLost" required placeholder="9"></label>
@@ -25,8 +32,10 @@
         <label>Assists<input type="number" min="0" name="assists" required></label><label>ACS<input type="number" min="0" name="acs"></label>
         <label>ADR<input type="number" min="0" step=".1" name="adr"></label><label>First Bloods<input type="number" min="0" name="firstBloods"></label>
         <label>First Deaths<input type="number" min="0" name="firstDeaths"></label><label>Clutches<input type="number" min="0" name="clutches"></label>
-        <label>RR-Änderung<input type="number" name="rrChange" placeholder="+18 / -21"></label><label>RR nach Match<input type="number" min="0" max="100" name="rrAfter"></label>
-        <label>Rang vorher<input name="rankBefore" placeholder="Gold 2"></label><label>Rang nachher<input name="rankAfter" placeholder="Gold 2"></label>
+        <div class="ranked-fields full" id="ranked-match-fields">
+          <label>RR-Änderung<input type="number" name="rrChange" placeholder="+18 / -21"></label><label>RR nach Match<input type="number" min="0" max="100" name="rrAfter"></label>
+          <label>Rang vorher<input name="rankBefore" placeholder="Gold 2"></label><label>Rang nachher<input name="rankAfter" placeholder="Gold 2"></label>
+        </div>
         <label>Matchdauer (Min.)<input type="number" min="1" name="duration"></label>
         <label class="checkbox"><input type="checkbox" name="mvp"> Match MVP</label>
         <label class="full">Notizen<textarea name="notes" rows="3" maxlength="500" placeholder="Was lief gut? Was möchtest du verbessern?"></textarea></label>
