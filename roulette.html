@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Agenten-Roulette · V-Track</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/roulette.css"></head>
+<body data-page="roulette"><div id="app-shell"></div><main class="page">
+  <header class="page-header"><div><p class="eyebrow">Agenten-Roulette</p><h1>Überlass es dem Zufall.</h1><p class="muted">Filtere deine Auswahl, aktiviere einen Modus und starte die Runde.</p></div></header>
+  <section class="roulette-layout">
+    <article class="panel controls"><h2>Auswahl</h2><div class="role-filters" id="role-filters"><button class="chip active" data-role="All">Alle</button><button class="chip" data-role="Duelist">Duelists</button><button class="chip" data-role="Initiator">Initiators</button><button class="chip" data-role="Controller">Controller</button><button class="chip" data-role="Sentinel">Sentinels</button></div>
+      <label>Modus<select id="roulette-mode"><option value="normal">Normal</option><option value="challenge">Challenge</option><option value="sabotage">Sabotage</option><option value="team">Team-Roulette</option></select></label>
+      <div id="agent-toggles" class="agent-toggles"></div>
+    </article>
+    <article class="roulette-stage">
+      <div class="roulette-result" id="roulette-result"><div class="agent-monogram">?</div><p class="eyebrow">Bereit?</p><h2>Wähle deinen Agent</h2><p id="challenge-text" class="muted">Dein Ergebnis erscheint hier.</p></div>
+      <button id="spin-button" class="button primary spin">Roulette starten</button>
+      <button id="save-result" class="button ghost" disabled>Ergebnis speichern</button>
+    </article>
+  </section>
+</main><script type="module" src="js/roulette.js"></script></body></html>

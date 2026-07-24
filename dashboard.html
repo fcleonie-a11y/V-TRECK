@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · V-Track</title>
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body data-page="dashboard">
+  <div id="app-shell"></div>
+  <main class="page">
+    <header class="page-header">
+      <div><p class="eyebrow">Übersicht</p><h1>Willkommen zurück, <span data-user-name>Spieler</span>.</h1><p class="muted">Hier ist dein aktueller Fortschritt.</p></div>
+      <a class="button primary" href="matches.html#new">+ Match eintragen</a>
+    </header>
+    <section class="stat-grid" id="dashboard-stats">
+      <article class="stat-card accent"><span>Aktueller Rang</span><strong id="current-rank">–</strong><small id="current-rr">Noch keine Rangdaten</small></article>
+      <article class="stat-card"><span>Winrate</span><strong id="winrate">–</strong><small id="record">0 Siege · 0 Niederlagen</small></article>
+      <article class="stat-card"><span>Ø KDA</span><strong id="avg-kda">–</strong><small id="avg-score">0 / 0 / 0</small></article>
+      <article class="stat-card"><span>Matches</span><strong id="match-count">0</strong><small>Gesamt erfasst</small></article>
+    </section>
+    <section class="dashboard-grid">
+      <article class="panel span-2">
+        <div class="panel-head"><div><p class="eyebrow">Performance</p><h2>RR-Verlauf</h2></div><a href="statistik.html">Details ansehen</a></div>
+        <div id="rr-chart" class="chart-placeholder"><span>Nach deinem ersten Ranked-Match erscheint hier der Verlauf.</span></div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><div><p class="eyebrow">Letzte Spiele</p><h2>Match-Historie</h2></div><a href="matches.html">Alle</a></div>
+        <div id="recent-matches" class="empty-state">Noch keine Matches eingetragen.</div>
+      </article>
+      <article class="panel">
+        <p class="eyebrow">Schnellstart</p><h2>Was möchtest du tun?</h2>
+        <div class="quick-actions">
+          <a href="matches.html#new"><b>Match erfassen</b><span>Ergebnis und Stats speichern →</span></a>
+          <a href="roulette.html"><b>Agent würfeln</b><span>Neue Herausforderung starten →</span></a>
+          <a href="statistik.html"><b>Stats analysieren</b><span>Stärken und Trends erkennen →</span></a>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

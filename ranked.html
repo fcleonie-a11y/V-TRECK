@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ranked · V-Track</title>
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body data-page="ranked">
+  <div id="app-shell"></div>
+  <main class="page">
+    <header class="page-header">
+      <div><p class="eyebrow">Competitive</p><h1>Ranked-Zentrale</h1><p class="muted">Verwalte Rang, RR, Episode und Act.</p></div>
+    </header>
+    <section class="stat-grid">
+      <article class="stat-card accent"><span>Aktueller Rang</span><strong id="rank-current">–</strong><small id="rank-rr">– RR</small></article>
+      <article class="stat-card"><span>Peak-Rang</span><strong id="rank-peak">–</strong><small>Persönlicher Bestwert</small></article>
+      <article class="stat-card"><span>Episode</span><strong id="rank-episode">–</strong><small>Aktuelle Episode</small></article>
+      <article class="stat-card"><span>Act</span><strong id="rank-act">–</strong><small>Aktueller Act</small></article>
+    </section>
+    <section class="dashboard-grid">
+      <form id="ranked-form" class="panel stack">
+        <div><p class="eyebrow">Manuelle Pflege</p><h2>Rangdaten aktualisieren</h2></div>
+        <label>Aktueller Rang
+          <select name="currentRank" required>
+            <option value="">Rang wählen</option><option>Iron 1</option><option>Iron 2</option><option>Iron 3</option>
+            <option>Bronze 1</option><option>Bronze 2</option><option>Bronze 3</option>
+            <option>Silver 1</option><option>Silver 2</option><option>Silver 3</option>
+            <option>Gold 1</option><option>Gold 2</option><option>Gold 3</option>
+            <option>Platinum 1</option><option>Platinum 2</option><option>Platinum 3</option>
+            <option>Diamond 1</option><option>Diamond 2</option><option>Diamond 3</option>
+            <option>Ascendant 1</option><option>Ascendant 2</option><option>Ascendant 3</option>
+            <option>Immortal 1</option><option>Immortal 2</option><option>Immortal 3</option><option>Radiant</option>
+          </select>
+        </label>
+        <label>Peak-Rang<input name="peakRank" placeholder="z. B. Diamond 1" required></label>
+        <label>Aktuelle RR<input type="number" name="rr" min="0" max="100" required></label>
+        <label>Episode<input name="episode" placeholder="z. B. Episode 10" required></label>
+        <label>Act<input name="act" placeholder="z. B. Act 2" required></label>
+        <div id="ranked-message" class="message" hidden></div>
+        <button class="button primary" type="submit">Rangdaten speichern</button>
+      </form>
+      <article class="panel">
+        <p class="eyebrow">Verlauf</p><h2>Ranked-Matches</h2>
+        <div id="ranked-history" class="empty-state">Noch keine Ranked-Matches gespeichert.</div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="js/ranked.js"></script>
+</body>
+</html>

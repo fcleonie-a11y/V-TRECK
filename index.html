@@ -67,9 +67,6 @@
     .primary:hover:before{transform:translateX(0)}.primary span{position:relative;z-index:1}.primary:hover span{color:#111827}
     .primary:disabled{opacity:.55;cursor:wait}
     .back{height:48px;border:1px solid var(--line);background:transparent;color:#aab3c1;font-weight:800}
-    .preview{width:100%;height:48px;margin-top:12px;border:1px solid var(--line);background:rgba(255,255,255,.025);
-      color:#aab3c1;font-weight:850;letter-spacing:.06em;text-transform:uppercase}
-    .preview:hover{border-color:var(--mint);color:var(--mint)}
     .message{display:none;border:1px solid rgba(85,230,213,.35);background:rgba(85,230,213,.08);color:var(--mint);
       padding:13px 14px;font-size:12px;line-height:1.5}.message.show{display:block}.message.error{border-color:rgba(255,70,85,.4);background:rgba(255,70,85,.08);color:#ff929a}
     .legal{margin:25px 0 0;color:#515d6f;font-size:9px;line-height:1.6;text-align:center}
@@ -140,12 +137,32 @@
           <button class="primary" type="submit"><span>Reset-Link senden →</span></button>
           <button class="back" type="button" data-view="login">Zurück zum Login</button>
         </form>
-        <button class="preview" id="preview-app" type="button">App ohne Firebase ansehen</button>
         <p class="legal">V-Track ist ein unabhängiges Projekt und wird nicht von Riot Games unterstützt oder betrieben.<br>Deine Daten bleiben in deinem persönlichen Firebase-Konto.</p>
       </div>
     </section>
   </main>
 
+  <script>
+    // Die sichtbare Navigation funktioniert unabhängig von Firebase und Netzwerk.
+    (() => {
+      const copy = {
+        login: ["Bereit für die Queue?","Melde dich an und setze deinen Grind dort fort, wo du aufgehört hast."],
+        register: ["Erstelle dein Profil.","Ein Account. Alle Matches, Statistiken und Ranked-Fortschritte an einem Ort."],
+        forgot: ["Zugang verloren?","Gib deine E-Mail-Adresse ein. Wir senden dir einen Link zum Zurücksetzen."]
+      };
+      const switchView = name => {
+        Object.keys(copy).forEach(id => document.querySelector("#" + id).hidden = id !== name);
+        document.querySelector("#heading").textContent = copy[name][0];
+        document.querySelector("#subtitle").textContent = copy[name][1];
+        document.querySelector("#tabs").style.display = name === "forgot" ? "none" : "grid";
+        document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.view === name));
+        document.querySelector("#message").className = "message";
+      };
+      document.querySelectorAll("[data-view]").forEach(button =>
+        button.addEventListener("click", () => switchView(button.dataset.view))
+      );
+    })();
+  </script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
     import {
@@ -189,10 +206,6 @@
     }
 
     document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => showView(button.dataset.view)));
-    document.querySelector("#preview-app").addEventListener("click", () => {
-      sessionStorage.setItem("vtrackPreview", "true");
-      location.href = "dashboard.html";
-    });
     document.querySelectorAll(".reveal").forEach(button => button.addEventListener("click", () => {
       const input = button.previousElementSibling;
       input.type = input.type === "password" ? "text" : "password";
