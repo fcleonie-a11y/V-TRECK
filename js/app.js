@@ -3,9 +3,9 @@ import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.
 import { createUserFoundation, getUserSection, saveUserSection } from "./data.js";
 
 const page = document.body.dataset.page;
-const labels = { dashboard: "Dashboard", matches: "Matches", roulette: "Roulette", statistics: "Statistiken", ranked: "Ranked", profile: "Profil", settings: "Einstellungen" };
+const labels = { dashboard: "Dashboard", matches: "Matches", roulette: "Roulette", challenges: "Challenges", statistics: "Statistiken", ranked: "Ranked", profile: "Profil", settings: "Einstellungen" };
 const links = [
-  ["dashboard", "dashboard.html"], ["matches", "matches.html"], ["roulette", "roulette.html"],
+  ["dashboard", "dashboard.html"], ["matches", "matches.html"], ["roulette", "roulette.html"], ["challenges", "challenges.html"],
   ["statistics", "statistik.html"], ["ranked", "ranked.html"], ["profile", "profil.html"], ["settings", "einstellungen.html"]
 ];
 

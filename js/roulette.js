@@ -2,9 +2,9 @@ import { userReady } from "./app.js";
 import { getUserSection, saveRouletteResult } from "./data.js";
 
 const agents = [
-  ["Brimstone","Controller"],["Viper","Controller"],["Omen","Controller"],["Astra","Controller"],["Harbor","Controller"],["Clove","Controller"],
+  ["Brimstone","Controller"],["Viper","Controller"],["Omen","Controller"],["Astra","Controller"],["Harbor","Controller"],["Clove","Controller"],["Miks","Controller"],
   ["Sova","Initiator"],["Breach","Initiator"],["Skye","Initiator"],["KAY/O","Initiator"],["Fade","Initiator"],["Gekko","Initiator"],["Tejo","Initiator"],
-  ["Sage","Sentinel"],["Cypher","Sentinel"],["Killjoy","Sentinel"],["Chamber","Sentinel"],["Deadlock","Sentinel"],["Vyse","Sentinel"],
+  ["Sage","Sentinel"],["Cypher","Sentinel"],["Killjoy","Sentinel"],["Chamber","Sentinel"],["Deadlock","Sentinel"],["Vyse","Sentinel"],["Veto","Sentinel"],
   ["Phoenix","Duelist"],["Jett","Duelist"],["Reyna","Duelist"],["Raze","Duelist"],["Yoru","Duelist"],["Neon","Duelist"],["Iso","Duelist"],["Waylay","Duelist"]
 ];
 const challenges = ["Nur Guardian kaufen, sobald möglich.","Nutze deine Ultimate innerhalb von 30 Sekunden nach Erhalt.","Spiele jede Runde für den ersten Kontakt.","Keine Aufgabe – fokussiere saubere Kommunikation."];

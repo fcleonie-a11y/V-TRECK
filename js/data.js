@@ -125,6 +125,21 @@ export async function saveRouletteResult(uid, result) {
   return addDoc(userCollection(uid, "roulette"), { ...result, source: "manual", createdAt: serverTimestamp() });
 }
 
+export async function saveChallengeResult(uid, result) {
+  if (!db) {
+    const results = localRead(uid, "challenges", []);
+    const id = crypto.randomUUID();
+    results.unshift({ id, ...result, source: "manual", createdAt: Date.now() });
+    localWrite(uid, "challenges", results);
+    return id;
+  }
+  return addDoc(userCollection(uid, "challenges"), {
+    ...result,
+    source: "manual",
+    createdAt: serverTimestamp()
+  });
+}
+
 async function updateRankedFromMatch(uid, match) {
   if (match.gameMode !== "Competitive" || (!match.rankAfter && match.rrAfter === null)) return;
   await saveUserSection(uid, "ranked", {

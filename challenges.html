@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Challenges · V-Track</title>
+  <link rel="icon" type="image/svg+xml" href="assets/vtrack-icon.svg">
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/roulette.css">
+</head>
+<body data-page="challenges">
+  <div id="app-shell"></div>
+  <main class="page">
+    <header class="page-header"><div><p class="eyebrow">Neue Herausforderung</p><h1>V-Track Challenges</h1><p class="muted">Wähle Solo oder Team und bring Abwechslung in deine nächste Runde.</p></div></header>
+    <section class="challenge-layout">
+      <article class="panel challenge-controls">
+        <h2>Challenge einstellen</h2>
+        <label>Spielart<select id="challenge-type"><option value="solo">Solo-Challenge</option><option value="team">Team-Challenge</option></select></label>
+        <label>Challenge-Level<select id="challenge-level"><option value="1">Level 1 · Einstieg</option><option value="2">Level 2 · Leicht</option><option value="3" selected>Level 3 · Fortgeschritten</option><option value="4">Level 4 · Schwer</option><option value="5">Level 5 · Extrem</option></select></label>
+        <label>Kategorie<select id="challenge-category"><option value="all">Alle Kategorien</option><option value="aim">Aim</option><option value="utility">Fähigkeiten</option><option value="teamplay">Teamplay</option><option value="economy">Economy</option><option value="fun">Fun</option></select></label>
+        <button class="button primary wide" id="draw-challenge">Challenge ziehen</button>
+      </article>
+      <article class="challenge-stage">
+        <div class="challenge-card" id="challenge-card">
+          <div class="challenge-icon">V</div>
+          <p class="eyebrow" id="challenge-label">Bereit?</p>
+          <h2 id="challenge-title">Deine Challenge wartet.</h2>
+          <p id="challenge-description" class="muted">Wähle deine Einstellungen und ziehe eine Aufgabe.</p>
+          <div class="challenge-meta" id="challenge-meta"></div>
+        </div>
+        <div class="challenge-buttons"><button class="button ghost" id="reroll-challenge" disabled>Neu würfeln</button><button class="button primary" id="save-challenge" disabled>Challenge speichern</button></div>
+        <div id="challenge-message" class="message" hidden></div>
+      </article>
+    </section>
+  </main>
+  <script type="module" src="js/challenges.js"></script>
+</body>
+</html>
