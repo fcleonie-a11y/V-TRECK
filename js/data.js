@@ -1,6 +1,6 @@
 import {
   collection, addDoc, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query,
-  serverTimestamp, setDoc
+  serverTimestamp, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { db } from "./firebase.js";
 
@@ -89,6 +89,29 @@ export async function removeMatch(uid, matchId) {
   await deleteDoc(doc(db, "users", uid, "matches", matchId));
   const matches = await getMatches(uid);
   await saveUserSection(uid, "statistics", calculateStatistics(matches));
+}
+
+export async function updateMatch(uid, matchId, match) {
+  const normalized = {
+    ...match,
+    schemaVersion: 1,
+    source: match.source || "manual",
+    updatedAt: db ? serverTimestamp() : Date.now()
+  };
+  if (!db) {
+    const matches = await getMatches(uid);
+    const index = matches.findIndex(item => item.id === matchId);
+    if (index === -1) throw new Error("Match nicht gefunden");
+    matches[index] = { ...matches[index], ...normalized, id: matchId };
+    localWrite(uid, "matches", matches);
+    await saveUserSection(uid, "statistics", calculateStatistics(matches));
+    await updateRankedFromMatch(uid, normalized);
+    return;
+  }
+  await updateDoc(doc(db, "users", uid, "matches", matchId), normalized);
+  const matches = await getMatches(uid);
+  await saveUserSection(uid, "statistics", calculateStatistics(matches));
+  await updateRankedFromMatch(uid, normalized);
 }
 
 export async function saveRouletteResult(uid, result) {

@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="de">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Matches · V-Track</title><link rel="icon" type="image/svg+xml" href="assets/vtrack-icon.svg"><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/tracker.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Matches · V-Track</title><link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/tracker.css"></head>
 <body data-page="matches">
   <div id="app-shell"></div>
   <main class="page">
@@ -10,7 +10,7 @@
   </main>
   <dialog id="match-dialog">
     <form id="match-form" class="modal-card">
-      <div class="panel-head"><div><p class="eyebrow">Manuelle Erfassung</p><h2>Match eintragen</h2></div><button type="button" class="icon-button" data-close aria-label="Schließen">×</button></div>
+      <div class="panel-head"><div><p class="eyebrow">Manuelle Erfassung</p><h2 id="match-dialog-title">Match eintragen</h2></div><button type="button" class="icon-button" data-close aria-label="Schließen">×</button></div>
       <div id="match-message" class="message" hidden></div>
       <div class="form-grid">
         <label>Datum<input type="date" name="date" required></label><label>Uhrzeit<input type="time" name="time" required></label>
