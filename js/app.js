@@ -16,6 +16,15 @@ if (shell) shell.innerHTML = `<header class="app-header">
   <div class="user-menu"><span data-user-name>Spieler</span><div class="avatar" data-user-initial>V</div><button class="icon-button" id="logout-button" title="Abmelden" aria-label="Abmelden">↪</button></div>
 </header>`;
 
+document.body.insertAdjacentHTML("beforeend", `<footer class="site-footer"><div class="footer-inner">
+  <span>© ${new Date().getFullYear()} V-Track · Unabhängiges Community-Projekt</span>
+  <nav class="footer-links" aria-label="Rechtliche Informationen">
+    <a href="ueber.html">Über V-Track</a><a href="datenschutz.html">Datenschutz</a>
+    <a href="nutzungsbedingungen.html">Nutzungsbedingungen</a><a href="impressum.html">Impressum</a>
+    <a href="kontakt.html">Kontakt</a>
+  </nav>
+</div></footer>`);
+
 export const userReady = new Promise(resolve => {
   if (!isFirebaseConfigured) {
     window.location.replace("index.html");

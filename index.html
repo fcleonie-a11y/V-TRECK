@@ -71,6 +71,8 @@
     .message{display:none;border:1px solid rgba(85,230,213,.35);background:rgba(85,230,213,.08);color:var(--mint);
       padding:13px 14px;font-size:12px;line-height:1.5}.message.show{display:block}.message.error{border-color:rgba(255,70,85,.4);background:rgba(255,70,85,.08);color:#ff929a}
     .legal{margin:25px 0 0;color:#515d6f;font-size:9px;line-height:1.6;text-align:center}
+    .legal-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .legal-links a{color:#778396;text-decoration:none}.legal-links a:hover{color:#f4f2ed}
     .view[hidden]{display:none}
     .loading{display:inline-block;width:14px;height:14px;border:2px solid #fff5;border-top-color:white;border-radius:50%;animation:spin .7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
@@ -138,7 +140,9 @@
           <button class="primary" type="submit"><span>Reset-Link senden →</span></button>
           <button class="back" type="button" data-view="login">Zurück zum Login</button>
         </form>
-        <p class="legal">V-Track ist ein unabhängiges Projekt und wird nicht von Riot Games unterstützt oder betrieben.<br>Deine Daten bleiben in deinem persönlichen Firebase-Konto.</p>
+        <p class="legal">V-Track ist ein unabhängiges Projekt und wird nicht von Riot Games unterstützt oder betrieben.<br>Deine Daten bleiben in deinem persönlichen Firebase-Konto.
+          <span class="legal-links"><a href="ueber.html">Über V-Track</a><a href="datenschutz.html">Datenschutz</a><a href="nutzungsbedingungen.html">Nutzungsbedingungen</a><a href="impressum.html">Impressum</a><a href="kontakt.html">Kontakt</a></span>
+        </p>
       </div>
     </section>
   </main>
