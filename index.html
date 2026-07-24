@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1923">
+<title>VALORANT Agenten-Rad – PC</title>
+<style>
+:root{
+  --bg:#0f1923;
+  --card:#17232e;
+  --card2:#111c25;
+  --text:#f7f7f7;
+  --muted:#aeb8c2;
+  --red:#ff4655;
+  --red2:#d93b49;
+  --green:#36d399;
+  --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,Segoe UI,Arial,sans-serif}
+body{
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 10%,rgba(255,70,85,.20),transparent 30%),
+    radial-gradient(circle at 85% 85%,rgba(54,211,153,.12),transparent 28%),
+    var(--bg);
+  padding:22px;
+}
+.app{max-width:1180px;margin:0 auto}
+.header{text-align:center;margin-bottom:18px}
+.logo{font-size:clamp(26px,4vw,48px);font-weight:950;letter-spacing:.14em}
+.logo span{color:var(--red)}
+.subtitle{color:var(--muted);margin:8px 0 0}
+.layout{
+  display:grid;
+  grid-template-columns:minmax(520px,1.5fr) minmax(300px,.8fr);
+  gap:20px;
+  align-items:start;
+}
+.card{
+  background:rgba(23,35,46,.94);
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:0 18px 55px rgba(0,0,0,.35);
+}
+.wheel-card{padding:20px;text-align:center}
+.panel{padding:20px}
+.wheel-wrap{position:relative;width:min(100%,650px);aspect-ratio:1;margin:0 auto}
+canvas{display:block;width:100%;height:100%;filter:drop-shadow(0 12px 18px rgba(0,0,0,.35))}
+.pointer{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;
+  border-top:42px solid white;z-index:5;filter:drop-shadow(0 3px 4px rgba(0,0,0,.55))
+}
+.center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:22%;aspect-ratio:1;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;user-select:none;
+  background:linear-gradient(145deg,var(--red),var(--red2));
+  border:7px solid white;font-weight:950;letter-spacing:.06em;
+  box-shadow:0 6px 20px rgba(0,0,0,.45);z-index:4;
+}
+.center:active{transform:translate(-50%,-50%) scale(.96)}
+button,input{font:inherit}
+.primary{
+  width:min(100%,460px);border:0;border-radius:14px;padding:15px 20px;margin-top:16px;
+  background:var(--red);color:#fff;font-size:18px;font-weight:900;cursor:pointer;
+  box-shadow:0 8px 20px rgba(255,70,85,.24)
+}
+.primary:disabled{opacity:.55;cursor:not-allowed}
+.primary:active{transform:scale(.985)}
+.result{
+  min-height:86px;margin-top:15px;padding:14px;border-radius:16px;
+  background:rgba(255,255,255,.055);border:1px solid var(--line);
+  display:flex;flex-direction:column;justify-content:center
+}
+.result small{color:var(--muted)}
+.result strong{font-size:clamp(28px,5vw,46px);margin-top:3px}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:13px}
+.chip{padding:8px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:13px;background:rgba(255,255,255,.04)}
+.panel h2{margin:0 0 6px;font-size:24px}
+.panel p{margin:0 0 16px;color:var(--muted);line-height:1.45}
+.add-row{display:grid;grid-template-columns:1fr auto;gap:9px}
+input{
+  min-width:0;border:1px solid var(--line);background:var(--card2);color:white;
+  padding:12px 13px;border-radius:12px;outline:none
+}
+input:focus{border-color:var(--red)}
+.add-btn,.small-btn{
+  border:0;border-radius:12px;padding:11px 14px;font-weight:800;cursor:pointer;color:white
+}
+.add-btn{background:var(--green);color:#08251b}
+.small-btn{background:rgba(255,255,255,.08)}
+.danger{background:rgba(255,70,85,.17);color:#ff9ca5}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0}
+.agent-list{
+  max-height:520px;overflow:auto;padding-right:4px;display:flex;flex-direction:column;gap:8px
+}
+.agent-item{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 11px;background:rgba(255,255,255,.045);
+  border:1px solid var(--line);border-radius:12px
+}
+.agent-name{font-weight:750;overflow-wrap:anywhere}
+.remove-btn{
+  flex:0 0 auto;border:0;border-radius:9px;padding:7px 10px;
+  background:rgba(255,70,85,.16);color:#ff9ca5;font-weight:850;cursor:pointer
+}
+.empty{color:var(--muted);padding:15px;border:1px dashed var(--line);border-radius:12px;text-align:center}
+.note{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.45}
+.toast{
+  position:fixed;right:18px;bottom:18px;padding:12px 15px;border-radius:12px;
+  background:#101b24;border:1px solid var(--line);box-shadow:0 10px 28px rgba(0,0,0,.35);
+  opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s
+}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .wheel-wrap{width:min(90vw,620px)}
+}
+@media(max-width:560px){
+  body{padding:12px}
+  .card{border-radius:18px}
+  .wheel-card,.panel{padding:14px}
+  .pointer{border-left-width:15px;border-right-width:15px;border-top-width:32px}
+  .center{border-width:4px;font-size:13px}
+  .add-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="header">
+    <div class="logo">VALORANT <span>AGENTEN-RAD</span></div>
+    <p class="subtitle">Offline nutzbar – eigene Agenten hinzufügen und dauerhaft speichern.</p>
+  </header>
+
+  <section class="layout">
+    <div class="card wheel-card">
+      <div class="wheel-wrap">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="1100" height="1100"></canvas>
+        <div class="center" id="centerBtn">DREHEN</div>
+      </div>
+
+      <button class="primary" id="spinBtn">AGENT AUSLOSEN</button>
+
+      <div class="result" aria-live="polite">
+        <small>Dein Agent ist</small>
+        <strong id="resultText">Noch nicht gedreht</strong>
+      </div>
+
+      <div class="stats">
+        <span class="chip" id="agentCount">0 Agenten</span>
+        <span class="chip" id="spinCount">Drehungen: 0</span>
+        <span class="chip">Offline nutzbar</span>
+      </div>
+    </div>
+
+    <aside class="card panel">
+      <h2>Agenten verwalten</h2>
+      <p>Trage einen Namen ein und füge ihn dem Rad hinzu. Deine Liste bleibt auf diesem PC gespeichert.</p>
+
+      <div class="add-row">
+        <input id="agentInput" type="text" maxlength="30" placeholder="Agentenname eingeben …" autocomplete="off">
+        <button class="add-btn" id="addBtn">Hinzufügen</button>
+      </div>
+
+      <div class="toolbar">
+        <button class="small-btn" id="resetBtn">Standardliste laden</button>
+        <button class="small-btn danger" id="clearBtn">Alle entfernen</button>
+      </div>
+
+      <div class="agent-list" id="agentList"></div>
+
+      <div class="note">
+        Tipp: Die Datei kann einfach per Doppelklick geöffnet werden. Es ist keine Installation und keine Internetverbindung nötig.
+      </div>
+    </aside>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_AGENTS = [
+  "Astra","Breach","Brimstone","Chamber","Clove","Cypher","Deadlock","Fade",
+  "Gekko","Harbor","Iso","Jett","KAY/O","Killjoy","Miks","Neon","Omen",
+  "Phoenix","Raze","Reyna","Sage","Skye","Sova","Tejo","Veto","Viper",
+  "Vyse","Waylay","Yoru"
+];
+
+const STORAGE_KEY = "valorantAgentenRad_agents_v2";
+const SPIN_KEY = "valorantAgentenRad_spins_v2";
+
+let agents = loadAgents();
+let spins = Number(localStorage.getItem(SPIN_KEY) || 0);
+let rotation = 0;
+let spinning = false;
+
+const colors = ["#ff4655","#1f8a70","#395b8a","#8f5bd7","#de7b36","#287d91","#b43f67","#4f6b84"];
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const spinBtn = document.getElementById("spinBtn");
+const centerBtn = document.getElementById("centerBtn");
+const resultText = document.getElementById("resultText");
+const spinCount = document.getElementById("spinCount");
+const agentCount = document.getElementById("agentCount");
+const agentInput = document.getElementById("agentInput");
+const addBtn = document.getElementById("addBtn");
+const resetBtn = document.getElementById("resetBtn");
+const clearBtn = document.getElementById("clearBtn");
+const agentList = document.getElementById("agentList");
+const toast = document.getElementById("toast");
+
+function loadAgents(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(saved) ? saved : [...DEFAULT_AGENTS];
+  }catch{
+    return [...DEFAULT_AGENTS];
+  }
+}
+
+function saveAgents(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(agents));
+}
+
+function showToast(message){
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1700);
+}
+
+function fitText(text, maxWidth, start=26){
+  let size = start;
+  do{
+    ctx.font = `800 ${size}px Inter, Segoe UI, Arial`;
+    size--;
+  }while(ctx.measureText(text).width > maxWidth && size > 10);
+  return size + 1;
+}
+
+function drawEmptyWheel(){
+  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=510;
+  ctx.clearRect(0,0,w,h);
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fillStyle="#243440";
+  ctx.fill();
+  ctx.strokeStyle="#fff";
+  ctx.lineWidth=13;
+  ctx.stroke();
+  ctx.fillStyle="#aeb8c2";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.font="800 42px Inter, Segoe UI, Arial";
+  ctx.fillText("Füge zuerst einen Agenten hinzu",cx,cy-20);
+  ctx.font="600 25px Inter, Segoe UI, Arial";
+  ctx.fillText("→ rechts im Menü",cx,cy+30);
+}
+
+function drawWheel(rot=0){
+  if(agents.length === 0){
+    drawEmptyWheel();
+    return;
+  }
+
+  const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=510;
+  ctx.clearRect(0,0,w,h);
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(rot);
+
+  const slice=2*Math.PI/agents.length;
+
+  for(let i=0;i<agents.length;i++){
+    const a0=i*slice-Math.PI/2;
+    const a1=a0+slice;
+
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,r,a0,a1);
+    ctx.closePath();
+    ctx.fillStyle=colors[i%colors.length];
+    ctx.fill();
+    ctx.strokeStyle="rgba(255,255,255,.22)";
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.rotate(a0+slice/2);
+    ctx.translate(r*0.69,0);
+    ctx.rotate(Math.PI/2);
+    ctx.fillStyle="#fff";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+
+    const width = agents.length > 35 ? 120 : agents.length > 25 ? 150 : 190;
+    const startSize = agents.length > 35 ? 18 : agents.length > 25 ? 23 : 28;
+    const size=fitText(agents[i],width,startSize);
+
+    ctx.font=`800 ${size}px Inter, Segoe UI, Arial`;
+    ctx.shadowColor="rgba(0,0,0,.5)";
+    ctx.shadowBlur=4;
+    ctx.fillText(agents[i],0,0);
+    ctx.restore();
+  }
+
+  ctx.beginPath();
+  ctx.arc(0,0,r,0,Math.PI*2);
+  ctx.strokeStyle="#fff";
+  ctx.lineWidth=13;
+  ctx.stroke();
+  ctx.restore();
+}
+
+function renderList(){
+  agentList.innerHTML="";
+
+  if(agents.length===0){
+    agentList.innerHTML='<div class="empty">Noch keine Agenten vorhanden.</div>';
+  }else{
+    agents.forEach((agent,index)=>{
+      const row=document.createElement("div");
+      row.className="agent-item";
+
+      const name=document.createElement("span");
+      name.className="agent-name";
+      name.textContent=agent;
+
+      const remove=document.createElement("button");
+      remove.className="remove-btn";
+      remove.textContent="Entfernen";
+      remove.addEventListener("click",()=>removeAgent(index));
+
+      row.append(name,remove);
+      agentList.appendChild(row);
+    });
+  }
+
+  agentCount.textContent=`${agents.length} ${agents.length===1 ? "Agent" : "Agenten"}`;
+  spinCount.textContent=`Drehungen: ${spins}`;
+  spinBtn.disabled = spinning || agents.length===0;
+  centerBtn.style.opacity = agents.length===0 ? ".55" : "1";
+  drawWheel(rotation);
+}
+
+function addAgent(){
+  const name=agentInput.value.trim();
+
+  if(!name){
+    showToast("Bitte einen Namen eingeben.");
+    agentInput.focus();
+    return;
+  }
+
+  if(agents.some(a=>a.toLowerCase()===name.toLowerCase())){
+    showToast("Dieser Agent ist schon vorhanden.");
+    return;
+  }
+
+  agents.push(name);
+  saveAgents();
+  agentInput.value="";
+  renderList();
+  showToast(`${name} wurde hinzugefügt.`);
+  agentInput.focus();
+}
+
+function removeAgent(index){
+  if(spinning) return;
+  const removed=agents[index];
+  agents.splice(index,1);
+  saveAgents();
+  rotation=0;
+  resultText.textContent="Noch nicht gedreht";
+  renderList();
+  showToast(`${removed} wurde entfernt.`);
+}
+
+function resetAgents(){
+  if(spinning) return;
+  agents=[...DEFAULT_AGENTS];
+  saveAgents();
+  rotation=0;
+  resultText.textContent="Noch nicht gedreht";
+  renderList();
+  showToast("Standardliste wurde geladen.");
+}
+
+function clearAgents(){
+  if(spinning) return;
+  agents=[];
+  saveAgents();
+  rotation=0;
+  resultText.textContent="Noch nicht gedreht";
+  renderList();
+  showToast("Alle Agenten wurden entfernt.");
+}
+
+function easeOutCubic(t){
+  return 1-Math.pow(1-t,3);
+}
+
+function spin(){
+  if(spinning || agents.length===0) return;
+
+  spinning=true;
+  spinBtn.disabled=true;
+  resultText.textContent="Wird ausgelost …";
+
+  const index=Math.floor(Math.random()*agents.length);
+  const slice=2*Math.PI/agents.length;
+  const targetAngle=-(index*slice+slice/2);
+  const currentMod=((rotation%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+
+  let delta=targetAngle-currentMod;
+  while(delta<0) delta+=2*Math.PI;
+  delta+=(6+Math.floor(Math.random()*3))*2*Math.PI;
+
+  const start=rotation;
+  const end=rotation+delta;
+  const duration=4300;
+  const started=performance.now();
+
+  function frame(now){
+    const t=Math.min((now-started)/duration,1);
+    rotation=start+(end-start)*easeOutCubic(t);
+    drawWheel(rotation);
+
+    if(t<1){
+      requestAnimationFrame(frame);
+    }else{
+      rotation=end;
+      spinning=false;
+      resultText.textContent=agents[index];
+      spins++;
+      localStorage.setItem(SPIN_KEY,String(spins));
+      renderList();
+
+      if(navigator.vibrate){
+        navigator.vibrate([80,40,120]);
+      }
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+
+addBtn.addEventListener("click",addAgent);
+agentInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter") addAgent();
+});
+resetBtn.addEventListener("click",resetAgents);
+clearBtn.addEventListener("click",clearAgents);
+spinBtn.addEventListener("click",spin);
+centerBtn.addEventListener("click",spin);
+
+renderList();
+</script>
+</body>
+</html>
