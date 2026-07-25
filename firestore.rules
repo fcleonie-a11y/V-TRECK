@@ -3,6 +3,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Nur die öffentliche Buildnummer darf ohne Anmeldung gelesen werden.
+    // Änderungen sind ausschließlich über die Firebase Console möglich.
+    match /appConfig/{document} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Jeder angemeldete Benutzer darf ausschließlich seine eigenen
     // V-Track-Dokumente und Unterbereiche lesen und verändern.
     match /users/{userId} {

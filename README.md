@@ -20,6 +20,17 @@ manuell erfasst. Das Datenmodell enthält bereits `source`, `externalMatchId` un
 Die Firebase-Webkonfiguration für `vtreck-e5fe8` ist bereits in
 `js/firebase-config.js` eingetragen.
 
+## Unsichtbarer Versionsabgleich
+
+Die App prüft beim Start das Firestore-Dokument `appConfig/public`. Dieses
+Dokument kann ein Textfeld `version` enthalten, zum Beispiel `1.0.0`.
+Eine höhere Version löst einmalig ein stilles Neuladen aus. Die Versionsnummer
+wird Nutzern nicht in der Oberfläche angezeigt.
+
+Bei einem Update zuerst in `js/version.js` die interne Buildnummer erhöhen,
+danach die neue Website veröffentlichen und erst zuletzt denselben Wert im
+Firestore-Dokument `appConfig/public` eintragen.
+
 ## Firestore-Struktur
 
 ```text

@@ -1,6 +1,9 @@
 import { auth, isFirebaseConfigured } from "./firebase.js";
 import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { createUserFoundation, getUserSection, saveUserSection } from "./data.js";
+import { checkForAppUpdate } from "./version.js";
+
+checkForAppUpdate();
 
 const page = document.body.dataset.page;
 const labels = { dashboard: "Dashboard", matches: "Matches", roulette: "Roulette", challenges: "Challenges", statistics: "Statistiken", ranked: "Ranked", profile: "Profil", settings: "Einstellungen" };
@@ -121,16 +124,23 @@ function initNavigationMotion() {
 
   active.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   nav.querySelectorAll("a").forEach(link => link.addEventListener("click", event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
     sessionStorage.setItem("vtrackNavPosition", JSON.stringify({
       left: link.offsetLeft,
       width: link.offsetWidth
     }));
     moveIndicator(link);
-    document.body.classList.add("page-leaving");
-    window.setTimeout(() => window.location.href = link.href, 170);
   }));
 
   window.addEventListener("resize", () => moveIndicator(active, false));
+
+  // Häufig benötigte Seiten werden im Hintergrund vorgeladen. Der spätere
+  // Wechsel kann dadurch ohne sichtbare Ladepause aus dem Browser-Cache erfolgen.
+  links.forEach(([, url]) => {
+    if (url === window.location.pathname.split("/").at(-1)) return;
+    const prefetch = document.createElement("link");
+    prefetch.rel = "prefetch";
+    prefetch.href = url;
+    prefetch.as = "document";
+    document.head.append(prefetch);
+  });
 }
