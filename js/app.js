@@ -12,9 +12,11 @@ const links = [
 const shell = document.querySelector("#app-shell");
 if (shell) shell.innerHTML = `<header class="app-header">
   <a class="brand" href="dashboard.html"><span class="brand-mark">V</span><span>TRACK</span></a>
-  <nav class="main-nav" aria-label="Hauptnavigation">${links.map(([key, url]) => `<a href="${url}" class="${page === key ? "active" : ""}">${labels[key]}</a>`).join("")}</nav>
+  <nav class="main-nav" aria-label="Hauptnavigation">${links.map(([key, url]) => `<a href="${url}" data-nav-key="${key}" class="${page === key ? "active" : ""}">${labels[key]}</a>`).join("")}<span class="nav-indicator" aria-hidden="true"></span></nav>
   <div class="user-menu"><span data-user-name>Spieler</span><div class="avatar" data-user-initial>V</div><button class="icon-button" id="logout-button" title="Abmelden" aria-label="Abmelden">↪</button></div>
 </header>`;
+
+initNavigationMotion();
 
 document.body.insertAdjacentHTML("beforeend", `<footer class="site-footer"><div class="footer-inner">
   <span>© ${new Date().getFullYear()} V-Track · Unabhängiges Community-Projekt</span>
@@ -89,4 +91,46 @@ async function initSettings() {
 
 function showFormMessage(form, text, error = false) {
   const el = form.querySelector(".message"); el.textContent = text; el.hidden = false; el.classList.toggle("error", error);
+}
+
+function initNavigationMotion() {
+  const nav = document.querySelector(".main-nav");
+  const indicator = document.querySelector(".nav-indicator");
+  const active = nav?.querySelector("a.active");
+  if (!nav || !indicator || !active) return;
+
+  const moveIndicator = (element, animate = true) => {
+    if (!animate) indicator.style.transition = "none";
+    indicator.style.width = `${element.offsetWidth}px`;
+    indicator.style.transform = `translateX(${element.offsetLeft}px)`;
+    if (!animate) requestAnimationFrame(() => indicator.style.removeProperty("transition"));
+  };
+
+  try {
+    const previous = JSON.parse(sessionStorage.getItem("vtrackNavPosition") || "null");
+    if (previous) {
+      indicator.style.width = `${previous.width}px`;
+      indicator.style.transform = `translateX(${previous.left}px)`;
+      requestAnimationFrame(() => requestAnimationFrame(() => moveIndicator(active)));
+    } else {
+      moveIndicator(active, false);
+    }
+  } catch {
+    moveIndicator(active, false);
+  }
+
+  active.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  nav.querySelectorAll("a").forEach(link => link.addEventListener("click", event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    sessionStorage.setItem("vtrackNavPosition", JSON.stringify({
+      left: link.offsetLeft,
+      width: link.offsetWidth
+    }));
+    moveIndicator(link);
+    document.body.classList.add("page-leaving");
+    window.setTimeout(() => window.location.href = link.href, 170);
+  }));
+
+  window.addEventListener("resize", () => moveIndicator(active, false));
 }
