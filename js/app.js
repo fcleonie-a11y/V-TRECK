@@ -3,7 +3,10 @@ import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.
 import { createUserFoundation, getUserSection, saveUserSection } from "./data.js";
 import { checkForAppUpdate } from "./version.js";
 
-checkForAppUpdate();
+if (!sessionStorage.getItem("vtrack-version-checked")) {
+  sessionStorage.setItem("vtrack-version-checked", "1");
+  checkForAppUpdate();
+}
 
 const page = document.body.dataset.page;
 const labels = { dashboard: "Dashboard", matches: "Matches", roulette: "Roulette", challenges: "Challenges", statistics: "Statistiken", ranked: "Ranked", profile: "Profil", settings: "Einstellungen" };
@@ -135,12 +138,21 @@ function initNavigationMotion() {
 
   // Häufig benötigte Seiten werden im Hintergrund vorgeladen. Der spätere
   // Wechsel kann dadurch ohne sichtbare Ladepause aus dem Browser-Cache erfolgen.
-  links.forEach(([, url]) => {
-    if (url === window.location.pathname.split("/").at(-1)) return;
+  const prepared = new Set();
+  const preparePage = link => {
+    const url = link.getAttribute("href");
+    if (!url || prepared.has(url)) return;
+    prepared.add(url);
     const prefetch = document.createElement("link");
     prefetch.rel = "prefetch";
     prefetch.href = url;
     prefetch.as = "document";
     document.head.append(prefetch);
+  };
+
+  nav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("pointerenter", () => preparePage(link), { once: true });
+    link.addEventListener("touchstart", () => preparePage(link), { once: true, passive: true });
+    link.addEventListener("focus", () => preparePage(link), { once: true });
   });
 }
